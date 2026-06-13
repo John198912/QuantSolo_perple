@@ -1,0 +1,51 @@
+[project]
+name = "quant-solo"
+version = "0.1.0"
+description = "QuantSolo — 一人公司 A 股周度中低频量化交易系统（M1 数据基建基线）"
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "Proprietary" }
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "polars>=1.0",
+    "duckdb>=1.0",
+    "pyarrow>=16.0",
+    "scipy>=1.13",
+    "pyyaml>=6.0",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+data = ["akshare>=1.14", "tushare>=1.4", "baostock>=0.8"]
+research = ["lightgbm>=4.3", "statsmodels>=0.14"]
+monitor = ["streamlit>=1.36", "requests>=2.32"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.5", "mypy>=1.10", "pre-commit>=3.7"]
+# 注意：xtquant 由迅投 QMT 客户端本地安装提供，不通过 PyPI（QS-E02 附录A）
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "live: 需要真实外部通道（券商/数据源），CI 默认跳过",
+    "pit: 点时正确性 13 场景回归（QS-C03 §12）",
+    "slow: 耗时测试",
+]
+addopts = "-q --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+exclude = ["tests/", "notebooks/"]

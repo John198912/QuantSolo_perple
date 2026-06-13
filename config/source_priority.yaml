@@ -1,0 +1,35 @@
+# 三源优先级与容差配置（QS-C03 §9 三源两票制）
+# AKShare 主采集 / Tushare Pro 对账 / BaoStock 冗余校验
+
+priority:
+  - akshare      # 主源
+  - tushare      # 对账源
+  - baostock     # 冗余源
+
+# 字段级数值容差：三源比对时，相对偏差 <= tolerance 视为一致
+tolerances:
+  close: 0.0001        # 收盘价 1bp
+  open: 0.0001
+  high: 0.0001
+  low: 0.0001
+  volume: 0.001        # 成交量 0.1%
+  amount: 0.001        # 成交额 0.1%
+  adj_factor: 0.0001   # 复权因子
+
+# 两票制裁决规则：
+#   - 三源齐全：取多数一致值（任意两源在容差内即采纳）
+#   - 仅两源：两源一致 -> 采纳；不一致 -> 标记 CONFLICT 升级人工
+#   - 仅一源：采纳但标记 SINGLE_SOURCE 降低置信
+#   - 全冲突：标记 CONFLICT，写 supersession_log，不猜值（QS-C03 原则）
+arbitration:
+  on_three_way_conflict: "flag_conflict"   # 三源各异 -> 升级人工
+  on_two_source_disagree: "flag_conflict"
+  on_single_source: "accept_low_confidence"
+  never_interpolate: true
+
+# 北向个股数据 2024-08-19 停披处置（QS-C03 附录B）
+deprecated_fields:
+  - field: "north_bound_hold"
+    status: "P3_degraded"
+    reason: "个股北向持股数据 2024-08-19 起停止披露"
+    fallback: "龙虎榜 + 个股主力资金流 + 股东户数"

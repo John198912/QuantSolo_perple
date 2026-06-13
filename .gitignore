@@ -1,0 +1,36 @@
+# 数据与运行时（rclone 备份，不进 Git）
+data/
+db/*.db
+run/
+*.parquet
+*.duckdb
+
+# 密钥与凭据（绝不进 Git — QS-E08 §3.3）
+.env
+secrets/
+*.key
+config/credentials*.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+dist/
+build/
+
+# Notebook 输出
+notebooks/**/*.ipynb_checkpoints/
+notebooks/**/output/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

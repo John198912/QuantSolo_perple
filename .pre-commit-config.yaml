@@ -1,0 +1,24 @@
+# pre-commit hooks（QS-E02 §5 / QS-E07 §3.3 自检命令本地化）
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-lint
+        name: ruff lint
+        entry: ruff check src tests tools
+        language: system
+        pass_filenames: false
+      - id: static-guard-scan
+        name: 静态守卫扫描（xtquant import 白名单 / UPDATE-DELETE 禁令 / float 算钱）
+        entry: python tools/static_guard_scan.py
+        language: system
+        pass_filenames: false
+      - id: frozen-params-check
+        name: 冻结参数 SHA256 校验
+        entry: python tools/frozen_params_check.py
+        language: system
+        pass_filenames: false
+      - id: pytest-pit
+        name: 点时 13 场景回归
+        entry: pytest tests/pit -q
+        language: system
+        pass_filenames: false

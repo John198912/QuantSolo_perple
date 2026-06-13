@@ -1,0 +1,60 @@
+# QuantSolo 冻结参数（宪法级，运行时不可修改）
+# 唯一来源：QS-CAL-001 / QS-C01 §1 / QS-C04 §六 / QS-C02
+# 修改必须走 QS-C00 §四 宪法修订流程；运行时由 frozen_params_check.py 校验 SHA256
+# 任何代码读取这些值必须经 src.config.load_frozen()，禁止散落硬编码
+
+schema_version = "1.0"
+
+[gates]
+# 统计闸门数字，唯一来源 QS-CAL-001 v1.0，禁止改动
+a1_hard_veto_sharpe_floor = 0.0      # A1: 合并段扣成本年化夏普 <= 0 -> 硬否决
+a2_weak_veto_dsr_floor = 0.5         # A2: 合并段 DSR < 0.5 -> 降级路径（非否决）
+n_eff_budget_total = 6               # test 段评估全生命周期次数上限
+validation_view_budget = 5           # validation 查看轮次上限
+b1_observe_weeks = 26                # B1 加仓判线观测窗（周）
+b1_min_real_weeks = 13               # B1 加仓前最少真实实盘周数
+b1_ic_se_multiplier = 1.0            # B1: 实测IC均值 > 研究IC - 1.0*SE
+b2_ic_se_multiplier = 1.645          # B2: 维持判线 > 研究IC - 1.645*SE
+b3_cost_deviation_max = 0.30         # B3: 成本偏差 <= +30%
+b3_recon_zero_error_weeks = 4        # B3: 对账连续零差错周数
+
+[risk]
+# 风控硬约束，唯一来源 QS-C01 §7 / QS-C04 §六
+drawdown_warn = 0.20                 # 三级回撤预警线 -> 降仓50%（先卖卫星）
+drawdown_hard_stop = 0.25            # 硬止损线 -> 全清仓+冻结+人工复盘
+max_position_per_stock = 0.08        # 单票上限
+max_position_per_industry = 0.30     # 单行业上限
+min_daily_turnover_cny = 50000000    # 日均成交额硬门槛（5000万）
+min_list_days = 250                  # 上市天数下限
+exclude_st = true
+
+[compliance]
+# 程序化交易内部限额，唯一来源 QS-C04 §六（远低于监管高频认定线）
+max_orders_per_second = 1
+max_orders_per_day = 200
+
+[data_split]
+# 数据集物理切分，唯一来源 QS-C02 §一，冻结不可触碰
+train_start = "2016-01-01"
+train_end = "2021-12-31"
+validation_start = "2022-01-01"
+validation_end = "2023-12-31"
+test_start = "2024-01-01"
+test_end = "2025-12-31"
+
+[cost]
+# 成本参数，唯一来源 QS-C01 §4 / baseline，回测与实盘建模一致
+stamp_duty_sell = 0.0005             # 印花税（卖出）
+commission_rate = 0.00025            # 佣金 万2.5
+commission_min_cny = 5.0             # 佣金最低 5 元
+transfer_fee_rate = 0.00001          # 过户费 万0.1
+slippage_floor = 0.002               # 回测滑点下限 0.2%
+
+[acceptance]
+# 验收双档，唯一来源 QS-C01 §17
+linear_baseline_sharpe = 0.6         # 线性基线 validation 夏普下限
+realistic_sharpe_floor = 0.8         # 现实档上实盘硬线
+realistic_annual_return_low = 0.10
+realistic_annual_return_high = 0.15
+realistic_max_drawdown = 0.25
+realistic_calmar = 0.5

@@ -1,0 +1,37 @@
+# QuantSolo 可调参数（盘后人工调整，非宪法级）
+# 与 frozen.toml 物理分离。调整属于"版本发布事件"（QS-E08 §8.3），需走发布流程
+# 实盘组合调整每季度至多一次
+
+portfolio:
+  core_weight: 0.78            # 核心多因子权重（75-80% 区间内可调）
+  satellite_weight: 0.22       # 趋势卫星权重（20-25% 区间内可调）
+  core_holding_count: 12       # 核心组合持仓数（10-15 区间）
+  core_weighting: "inverse_vol" # 波动率倒数加权
+
+market_timing:
+  index_code: "000300.SH"      # 沪深300
+  ma_window: 200               # 200 日均线
+  confirm_days: 3              # N 日确认延迟
+  exposure_above: 1.00         # MA 之上仓位
+  exposure_near: 0.60          # 临界区仓位
+  exposure_below: 0.30         # MA 之下仓位
+
+trend_satellite:
+  donchian_window: 20          # 唐奇安通道
+  atr_window: 14
+  atr_stop_multiple: 2.0       # 2倍ATR跟踪止损
+  min_hold_days: 2
+  max_hold_days: 10
+
+factor_selection:
+  candidate_min: 15            # 宽进
+  candidate_max: 20
+  selected_min: 6              # 严出
+  selected_max: 8
+  bh_fdr_alpha: 0.10           # BH-FDR 显著性水平
+
+data_pipeline:
+  collect_time: "17:00"        # 盘后采集统一时间戳
+  source_primary: "akshare"
+  source_reconcile: "tushare"
+  source_redundant: "baostock"
